@@ -103,7 +103,8 @@ def sklearn_c45_tree_decision(df):
             df[column_name] = le.fit_transform(df[column_name])
 
     #Split feature part X, and label part Y, from dataset, into train and test parts
-    X, Y = [df.iloc[:, list(range(0, len(df.columns) - 2))].values, df.iloc[:, len(df.columns) - 1].values]
+    X = df[['age', 'menopause', 'tumor-size', 'inv-nodes','node-caps', 'deg-malig', 'breast', 'breast-quad', 'irradiat']]
+    Y = df[['Class']]
     X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=TEST_SIZE, random_state=RANDOM_STATE)
 
     # fit method is used to train data
