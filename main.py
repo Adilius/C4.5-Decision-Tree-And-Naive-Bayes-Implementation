@@ -1,6 +1,7 @@
 
 from scipy.io.arff import loadarff  # To load .arff files
 import pandas
+import copy #For deep copy
 from rich.console import Console    # Rich used for pretty console printing
 from rich.table import Table        # Rich used for printing table
 
@@ -66,6 +67,7 @@ def print_table(df):
 
 #Run the sklearn Naive bayes on dataframe
 def sklearn_naive_bayes(df):
+
     #Encode string into incremental value
     le = preprocessing.LabelEncoder()
     for column_name in df.columns:
@@ -100,6 +102,12 @@ def sklearn_naive_bayes(df):
 #Run sklearn CART tree decision algorithm on dataframe
 def sklearn_cart_tree_decision(df):
 
+    #Create image for export
+    feature_names = list(df.columns[:-1])
+    class_names = list(['recurrence-events','no-recurrence-events'])    #Temp hardcoded solution
+    #print("Feature", feature_names)
+    #print("Class", class_names)
+
     #Encode string into incremental value
     le = preprocessing.LabelEncoder()
     for column_name in df.columns:
@@ -131,11 +139,6 @@ def sklearn_cart_tree_decision(df):
     accuracy = str(((cm[0][0] + cm[1][1]) / sum(map(sum, cm)))*100)[:4]
     print('C4.5 Accuracy: ' + accuracy + "% \n")
 
-    #Create image for export
-    feature_names = list(df.columns[:-1])
-    class_names = df.columns[-1]
-    print("Feature", feature_names)
-    print("Class", class_names)
     create_decision_tree_image(classifier, feature_names, class_names)
 
 #Create image of decision tree
@@ -162,7 +165,7 @@ console = Console()
 with console.status("[bold green]Processing data...") as status:
     df = arff_to_dataframe("breast-cancer.arff")
     print_table(df)
-    sklearn_naive_bayes(df)
-    sklearn_cart_tree_decision(df)
+    sklearn_naive_bayes(copy.deepcopy(df))
+    sklearn_cart_tree_decision(copy.deepcopy(df))
     print('Test size: ' + str(TEST_SIZE * 100) + '%')
     print('Random state: ' + str(RANDOM_STATE))
