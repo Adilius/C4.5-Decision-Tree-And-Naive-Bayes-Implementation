@@ -55,6 +55,10 @@ def sklearn_naive_bayes(df):
 
     print(model.score(x_test, y_test))  
 
+#Run sklearn C4.5 tree decision algorithm on dataframe
+def sklearn_c45_tree_decision(df):
+    ...
+
 # Initialize console and table object for pretty printing
 console = Console()
 
