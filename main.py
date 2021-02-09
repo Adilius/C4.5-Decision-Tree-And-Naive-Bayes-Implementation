@@ -90,7 +90,8 @@ def sklearn_naive_bayes(df):
     console.print(table)
 
     #Calculate and print accuracy
-    print('NB Accuracy: ' + str((cm[0][0] + cm[1][1]) / sum(map(sum, cm))) + "%")  
+    accuracy = str(((cm[0][0] + cm[1][1]) / sum(map(sum, cm)))*100)[:4]
+    print('NB Accuracy: ' + accuracy + "% \n")
 
 #Run sklearn C4.5 tree decision algorithm on dataframe
 def sklearn_c45_tree_decision(df):
@@ -122,7 +123,8 @@ def sklearn_c45_tree_decision(df):
     console.print(table)
 
     #Calculate and print accuracy
-    print('C4.5 Accuracy: ' + str((cm[0][0] + cm[1][1]) / sum(map(sum, cm))) + "%")
+    accuracy = str(((cm[0][0] + cm[1][1]) / sum(map(sum, cm)))*100)[:4]
+    print('C4.5 Accuracy: ' + accuracy + "% \n")
 
 # Initialize console and table object for pretty printing
 console = Console()
@@ -132,5 +134,5 @@ with console.status("[bold green]Processing data...") as status:
     print_table(df)
     sklearn_naive_bayes(df)
     sklearn_c45_tree_decision(df)
-    print('Testsize: ' + str(TEST_SIZE * 100) + '%')
+    print('Test size: ' + str(TEST_SIZE * 100) + '%')
     print('Random state: ' + str(RANDOM_STATE))
