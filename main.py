@@ -7,11 +7,15 @@ from rich.table import Table        # Rich used for printing table
 from sklearn.model_selection import train_test_split  # Naive bayes
 from sklearn import preprocessing  # Naive bayes & C4.5 decision tree
 from sklearn.naive_bayes import GaussianNB  # Naive bayes
-from sklearn.tree import DecisionTreeClassifier #C4.5 decision tree
+from sklearn.tree import DecisionTreeClassifier, export_graphviz #C4.5 decision tree
 from sklearn.metrics import confusion_matrix #C4.5 decision tree
 
 import matplotlib.pyplot as plt #Plotting tool
-import numpy as np
+import numpy as np  #General tool
+
+from six import StringIO #Used for image creation
+import pydotplus #Used for image creation
+from IPython.display import Image #Used for image creation
 
 RANDOM_STATE = 40 #Sets seed for splitting the data
 TEST_SIZE = 0.25 #Sets size for test set of total data set
@@ -34,7 +38,7 @@ def arff_to_dataframe(arff):
 
     return df
 
-# Prints table from dataset variable
+#Prints table from dataset variable
 def print_table(df):
 
     # Initialize table
@@ -60,7 +64,7 @@ def print_table(df):
     # Print table
     console.print(table)
 
-# Run the sklearn Naive bayes on dataframe
+#Run the sklearn Naive bayes on dataframe
 def sklearn_naive_bayes(df):
     #Encode string into incremental value
     le = preprocessing.LabelEncoder()
@@ -93,8 +97,8 @@ def sklearn_naive_bayes(df):
     accuracy = str(((cm[0][0] + cm[1][1]) / sum(map(sum, cm)))*100)[:4]
     print('NB Accuracy: ' + accuracy + "% \n")
 
-#Run sklearn C4.5 tree decision algorithm on dataframe
-def sklearn_c45_tree_decision(df):
+#Run sklearn CART tree decision algorithm on dataframe
+def sklearn_cart_tree_decision(df):
 
     #Encode string into incremental value
     le = preprocessing.LabelEncoder()
@@ -107,10 +111,9 @@ def sklearn_c45_tree_decision(df):
     Y = df[['Class']]
     X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=TEST_SIZE, random_state=RANDOM_STATE)
 
-    # fit method is used to train data
-    classifier = DecisionTreeClassifier(criterion= 'entropy', random_state=RANDOM_STATE)
-    classifier.fit(X_train, Y_train)
-
+    #Fit method is used to train data
+    classifier = DecisionTreeClassifier(random_state=RANDOM_STATE)
+    classifier = classifier.fit(X_train, Y_train)
 
     #Run prediction
     Y_pred = classifier.predict(X_test)
@@ -128,6 +131,31 @@ def sklearn_c45_tree_decision(df):
     accuracy = str(((cm[0][0] + cm[1][1]) / sum(map(sum, cm)))*100)[:4]
     print('C4.5 Accuracy: ' + accuracy + "% \n")
 
+    #Create image for export
+    feature_names = list(df.columns[:-1])
+    class_names = df.columns[-1]
+    print("Feature", feature_names)
+    print("Class", class_names)
+    create_decision_tree_image(classifier, feature_names, class_names)
+
+#Create image of decision tree
+def create_decision_tree_image(decision_tree, feature_names, class_names):
+
+    dot_data = StringIO()
+
+    export_graphviz(decision_tree, 
+            out_file=dot_data,
+            filled=True,
+            rounded=True,
+            special_characters=True,
+            feature_names=feature_names,
+            class_names=class_names)
+
+    graph = pydotplus.graph_from_dot_data(dot_data.getvalue())
+    graph.write_png("big_tree.png")
+    Image(graph.create_png())
+
+
 # Initialize console and table object for pretty printing
 console = Console()
 
@@ -135,6 +163,6 @@ with console.status("[bold green]Processing data...") as status:
     df = arff_to_dataframe("breast-cancer.arff")
     print_table(df)
     sklearn_naive_bayes(df)
-    sklearn_c45_tree_decision(df)
+    sklearn_cart_tree_decision(df)
     print('Test size: ' + str(TEST_SIZE * 100) + '%')
     print('Random state: ' + str(RANDOM_STATE))
