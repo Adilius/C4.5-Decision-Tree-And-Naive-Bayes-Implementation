@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split  # Naive bayes
 from sklearn import preprocessing  # Naive bayes & C4.5 decision tree
 from sklearn.naive_bayes import GaussianNB  # Naive bayes
 from sklearn.tree import DecisionTreeClassifier, export_graphviz #C4.5 decision tree
-from sklearn.metrics import confusion_matrix #C4.5 decision tree
+from sklearn.metrics import confusion_matrix, roc_curve, roc_auc_score #C4.5 decision tree
 
 import matplotlib.pyplot as plt #Plotting tool
 import numpy as np  #General tool
@@ -18,7 +18,7 @@ from six import StringIO #Used for image creation
 import pydotplus #Used for image creation
 from IPython.display import Image #Used for image creation
 
-RANDOM_STATE = 40 #Sets seed for splitting the data
+RANDOM_STATE = 43 #Sets seed for splitting the data
 TEST_SIZE = 0.25 #Sets size for test set of total data set
 CCP_ALPHA = 0.0065 #Sets cost complexity for decision tree classifier
 
@@ -100,6 +100,12 @@ def sklearn_naive_bayes(df):
     accuracy = str(((cm[0][0] + cm[1][1]) / sum(map(sum, cm)))*100)[:4]
     print('NB Accuracy: ' + accuracy + "% \n")
 
+    #Create ROC-curve
+    y_score = model.predict_proba(x_test)[:,1]
+    false_positive_rate, true_positive_rate, threshold = roc_curve(y_test, y_score)
+    print('roc_auc_score for Naive Bayes:', roc_auc_score(y_test, y_score))
+    plot_roc_curve(false_positive_rate, true_positive_rate, 'Receiver Operating Characteristic - Naive Bayes')
+
 #Run sklearn CART tree decision algorithm on dataframe
 def sklearn_cart_tree_decision(df):
 
@@ -138,7 +144,14 @@ def sklearn_cart_tree_decision(df):
     accuracy = str(((cm[0][0] + cm[1][1]) / sum(map(sum, cm)))*100)[:4]
     print('C4.5 Accuracy: ' + accuracy + "% \n")
 
+    #Create tree image
     create_decision_tree_image(classifier, feature_names, class_names)
+
+    #Create ROC-curve
+    Y_score = classifier.predict_proba(X_test)[:,1]
+    false_positive_rate, true_positive_rate, threshold = roc_curve(Y_test, Y_score)
+    print('roc_auc_score for Decision Tree:', roc_auc_score(Y_test, Y_score))
+    plot_roc_curve(false_positive_rate, true_positive_rate, 'Receiver Operating Characteristic - Decision Tree')
 
 #Create image of decision tree
 def create_decision_tree_image(decision_tree, feature_names, class_names):
@@ -157,6 +170,16 @@ def create_decision_tree_image(decision_tree, feature_names, class_names):
     graph.write_png("big_tree.png")
     Image(graph.create_png())
 
+#Creats and prints a roc curve
+def plot_roc_curve(false_positive_rate, true_positive_rate, title):
+    plt.subplots(1, figsize=(10,10))
+    plt.title(title)
+    plt.plot(false_positive_rate, true_positive_rate)
+    plt.plot([0, 1], ls="--")
+    plt.plot([0, 0], [1, 0] , c=".7"), plt.plot([1, 1] , c=".7") #Straight line
+    plt.ylabel('True Positive Rate')
+    plt.xlabel('False Positive Rate')
+    plt.show()
 
 # Initialize console and table object for pretty printing
 console = Console()
@@ -164,7 +187,7 @@ console = Console()
 with console.status("[bold green]Processing data...") as status:
     df = arff_to_dataframe("breast-cancer.arff")
     #print_table(df)
-    #sklearn_naive_bayes(copy.deepcopy(df))
+    sklearn_naive_bayes(copy.deepcopy(df))
     sklearn_cart_tree_decision(copy.deepcopy(df))
     print('Test size: ' + str(TEST_SIZE * 100) + '%')
     print('Random state: ' + str(RANDOM_STATE))
