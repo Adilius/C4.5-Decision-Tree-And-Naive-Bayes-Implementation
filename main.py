@@ -20,6 +20,7 @@ from IPython.display import Image #Used for image creation
 
 RANDOM_STATE = 40 #Sets seed for splitting the data
 TEST_SIZE = 0.25 #Sets size for test set of total data set
+CCP_ALPHA = 0.0065 #Sets cost complexity for decision tree classifier
 
 #Load, encode, and clean dataframe from .arff file
 def arff_to_dataframe(arff):
@@ -105,8 +106,6 @@ def sklearn_cart_tree_decision(df):
     #Create image for export
     feature_names = list(df.columns[:-1])
     class_names = list(['recurrence-events','no-recurrence-events'])    #Temp hardcoded solution
-    #print("Feature", feature_names)
-    #print("Class", class_names)
 
     #Encode string into incremental value
     le = preprocessing.LabelEncoder()
@@ -120,7 +119,7 @@ def sklearn_cart_tree_decision(df):
     X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=TEST_SIZE, random_state=RANDOM_STATE)
 
     #Fit method is used to train data
-    classifier = DecisionTreeClassifier(random_state=RANDOM_STATE)
+    classifier = DecisionTreeClassifier(criterion="gini" ,random_state=RANDOM_STATE, ccp_alpha=CCP_ALPHA)
     classifier = classifier.fit(X_train, Y_train)
 
     #Run prediction
@@ -164,8 +163,8 @@ console = Console()
 
 with console.status("[bold green]Processing data...") as status:
     df = arff_to_dataframe("breast-cancer.arff")
-    print_table(df)
-    sklearn_naive_bayes(copy.deepcopy(df))
+    #print_table(df)
+    #sklearn_naive_bayes(copy.deepcopy(df))
     sklearn_cart_tree_decision(copy.deepcopy(df))
     print('Test size: ' + str(TEST_SIZE * 100) + '%')
     print('Random state: ' + str(RANDOM_STATE))
