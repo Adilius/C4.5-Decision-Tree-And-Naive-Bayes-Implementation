@@ -186,7 +186,7 @@ console = Console()
 
 with console.status("[bold green]Processing data...") as status:
     df = arff_to_dataframe("breast-cancer.arff")
-    #print_table(df)
+    print_table(df)
     sklearn_naive_bayes(copy.deepcopy(df))
     sklearn_cart_tree_decision(copy.deepcopy(df))
     print('Test size: ' + str(TEST_SIZE * 100) + '%')
