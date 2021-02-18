@@ -175,11 +175,11 @@ def plot_roc_curve(false_positive_rate, true_positive_rate, title):
     plt.subplots(1, figsize=(10,10))
     plt.title(title)
     plt.plot(false_positive_rate, true_positive_rate)
-    plt.plot([0, 1], ls="--")
+    plt.plot([0, 1], ls="--")   #Straight line
     plt.plot([0, 0], [1, 0] , c=".7"), plt.plot([1, 1] , c=".7") #Straight line
     plt.ylabel('True Positive Rate')
     plt.xlabel('False Positive Rate')
-    plt.show()
+    plt.draw()  #Create plot
 
 # Initialize console and table object for pretty printing
 console = Console()
@@ -191,3 +191,4 @@ with console.status("[bold green]Processing data...") as status:
     sklearn_cart_tree_decision(copy.deepcopy(df))
     print('Test size: ' + str(TEST_SIZE * 100) + '%')
     print('Random state: ' + str(RANDOM_STATE))
+    plt.show()  #Show plots
