@@ -18,10 +18,6 @@ scikit_learn==0.24.1
 Graphviz is used to export image of decision tree.
 To install download Graphviz and add to path variable. Reboot may be required.
 
-# Output
-
-Results and output from both algorithms
-
 ## Naive Bayes
 
 | Confusion matrix        | Actual Positive (1)           | Actual Negative (0)  |
